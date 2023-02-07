@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SborkaPreflight.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="pathApproved" Type="System.String" Scope="User">
+      <Value Profile="(Default)">d:\Programming\Test\[day]-[month]\Layouts\Approved\</Value>
+    </Setting>
+    <Setting Name="pathNew" Type="System.String" Scope="User">
+      <Value Profile="(Default)">d:\Programming\Test\[day]-[month]\Layouts\New\</Value>
+    </Setting>
+    <Setting Name="pathPDFs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">d:\Programming\Test\[day]-[month]\Layouts\PDFs\</Value>
+    </Setting>
+    <Setting Name="pathProblem" Type="System.String" Scope="User">
+      <Value Profile="(Default)">d:\Programming\Test\[day]-[month]\Layouts\Problem\</Value>
+    </Setting>
+    <Setting Name="PdfPreset" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Sborka_Press_new</Value>
+    </Setting>
+    <Setting Name="regexFullNumberInFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">\(((?&lt;customer&gt;\d{1,5})-(?&lt;order&gt;\d{7,8}))\)</Value>
+    </Setting>
+    <Setting Name="regexSizeInFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">\((\d{1,4}[xXхХ]\d{1,4})\)</Value>
+    </Setting>
+    <Setting Name="admissibleExtentions" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.zip,.rar,.7z</Value>
+    </Setting>
+    <Setting Name="trueExtentions" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.tif,.tiff,.jpg,.png,.cdr</Value>
+    </Setting>
+    <Setting Name="regexPrintrunInFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">_[TТ](?&lt;printrun&gt;\d+)_</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,525 @@
+﻿<UserControl x:Class="SborkaPreflight.View.MainUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ie="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions" 
+             xmlns:model="clr-namespace:SborkaPreflight.Model"
+             mc:Ignorable="d" d:DesignWidth="340" MinHeight="200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourcesMainUserControl.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3">
+            <Button x:Name="BtnOrderList" Content="{StaticResource IconAdd}" Command="{Binding BtnOrderList_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="New order" IsEnabled="{Binding Path=CorelDocker.NewOrderCanExecute, Mode=TwoWay}" />
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            <Button x:Name="btnFitToPage" Content="{StaticResource IconFitToPage}" Command="{Binding BtnFitToPage_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="Fit to page" IsEnabled="{Binding Path=CorelDocker.FitToPageCanExecute, Mode=TwoWay}" />
+            <Button x:Name="btnGuides" Content="{StaticResource IconGuides}" Command="{Binding BtnGuides_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="Make/remove guides" IsEnabled="{Binding Path=CorelDocker.MakeGuidesCanExecute, Mode=TwoWay}" />
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            <Button x:Name="btnToPDF" Content="{StaticResource IconPDF}" Command="{Binding BtnToPDF_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="Publish to PDF" IsEnabled="{Binding Path=CorelDocker.ToPDFCanExecute, Mode=TwoWay}" />
+            <Button x:Name="btnToCdr" Content="{StaticResource IconCorel}" Command="{Binding BtnToCDR_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="Save as v.17" IsEnabled="{Binding Path=CorelDocker.ToPDFCanExecute, Mode=TwoWay}" />
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            <Button x:Name="btnToPrepress" Content="{StaticResource IconTick}" Command="{Binding BtnToPrepress_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="To prepress" IsEnabled="{Binding Path=CorelDocker.ToPrepressCanExecute, Mode=TwoWay}" />
+            <Button x:Name="btnToUser" Content="{StaticResource IconCross}" Command="{Binding BtnToUser_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="To user" IsEnabled="{Binding Path=CorelDocker.ToUserCanExecute, Mode=TwoWay}" />
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            <Button x:Name="btnUpdate" Content="{StaticResource IconUpdate}" Command="{Binding BtnUpdate_ClickCommand}"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}"
+                    ToolTip="Update verification" IsEnabled="{Binding Path=CorelDocker.ToUserCanExecute, Mode=TwoWay}" />
+            <ToggleButton x:Name="btnAdditionalMenu" Content="{StaticResource IconMenu}" ToolTip="Additional menu"
+                    Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}" IsEnabled="{Binding Path=CorelDocker.AditionalMenuCanExecute, Mode=OneWay}" IsEnabledChanged="btnAdditionalMenu_IsEnabledChanged" />
+        </StackPanel>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3" HorizontalAlignment="Right" Width="5" Background="Black" Height="5" VerticalAlignment="Top">
+            <StackPanel.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Setting" Command="{Binding BtnSetting_ClickCommand}"/>
+                </ContextMenu>
+            </StackPanel.ContextMenu>
+        </StackPanel>
+        <Grid Grid.Row="1" Style="{StaticResource style_GridInfo}" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="15"/>
+                <RowDefinition Height="107*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Margin="3" HorizontalAlignment="Center" >
+                <Button x:Name="btnNumberCustomer" Content="{Binding CorelDocker.OpenedOrder.NumberCustomer}" Cursor="Hand" Focusable="False" Padding="0"
+                        FontWeight="Bold" FontSize="17" Style="{StaticResource style_OrderNumber}" VerticalContentAlignment="Bottom"
+                        Command="{Binding Copy}" CommandParameter="{Binding Content, ElementName=btnNumberCustomer}" Foreground="Red" />
+                <Label FontWeight="Bold" FontSize="17" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom"
+                       Padding="0" Foreground="Red">
+                    <Label.Style>
+                        <Style>
+                            <Setter Property="Label.Content" Value="-" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder}" Value="{x:Null}">
+                                    <Setter Property="Label.Content" Value="" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+                <Button x:Name="btnNumberOrder" Content="{Binding CorelDocker.OpenedOrder.NumberOrder}" Cursor="Hand" Focusable="False" Padding="0"
+                        FontWeight="Bold" FontSize="17" Style="{StaticResource style_OrderNumber}" VerticalContentAlignment="Bottom"
+                        Command="{Binding Copy}" CommandParameter="{Binding Content, ElementName=btnNumberOrder}" Foreground="Red" />
+            </StackPanel>
+            <Label Grid.Row="1" Content="{Binding CorelDocker.OpenedOrder.DocumentSize}" FontSize="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom"
+                       Padding="30,0,0,0" FontStyle="Italic" FontWeight="Bold" />
+            <Label Grid.Row="1" Grid.Column="1" Content="{Binding CorelDocker.OpenedOrder.Colored}" FontSize="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom"
+                       Padding="0,0,30,0" FontStyle="Italic" FontWeight="Bold" />
+            <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="5,10,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="FACE" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                    <Button x:Name="btnFaceFile" Content="{Binding CorelDocker.OpenedOrder.Page1Extension, Mode=OneWay}" Cursor="Hand" Focusable="False" Padding="0"
+                        Style="{StaticResource style_OrderNumber}" VerticalContentAlignment="Bottom" IsEnabled="True" VerticalAlignment="Top"
+                        Command="{Binding BtnSideOpen_ClickCommand}" CommandParameter="face"/>
+                </StackPanel>
+                <StackPanel Grid.ColumnSpan="2" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="BACK" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                    <Button x:Name="btnBackFile" Content="{Binding CorelDocker.OpenedOrder.Page2Extension, Mode=OneWay}" Cursor="Hand" Focusable="False" Padding="0"
+                        Style="{StaticResource style_OrderNumber}" VerticalContentAlignment="Bottom" IsEnabled="True" VerticalAlignment="Top"
+                        Command="{Binding BtnSideOpen_ClickCommand}" CommandParameter="back"/>
+                </StackPanel>
+                <Border x:Name="iconCenter_Face" Grid.Row="1" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1IsCentered}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1IsCentered}" Value="true">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="CENTER" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconCenter_Face}" FontFamily="Calibri" />
+                </Border>
+                <Border x:Name="iconSize_Face" Grid.Row="1" Grid.Column="1" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1SizeIsCorrect}" Value="2">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1SizeIsCorrect}" Value="1">
+                                    <Setter Property="Border.BorderBrush" Value="#FFFFDC00" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1SizeIsCorrect}" Value="0">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="SIZE" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconSize_Face}" FontFamily="Calibri" />
+                </Border>
+                <Border x:Name="iconResolution_Face" Grid.Row="2" BorderThickness="2" CornerRadius="8" Margin="3" ToolTip="sldkslkfssf">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ResolutionIsCorrect}" Value="2">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ResolutionIsCorrect}" Value="1">
+                                    <Setter Property="Border.BorderBrush" Value="#FFFFDC00" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ResolutionIsCorrect}" Value="0">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconResolution_Face}" FontFamily="Calibri">
+                        <Label.Style>
+                            <Style>
+                                <Setter Property="Label.Content" Value="{Binding Path=CorelDocker.OpenedOrder.Page1Resolution}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Resolution}" Value="">
+                                        <Setter Property="Label.Content" Value="DPI" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Resolution}" Value="{x:Null}">
+                                        <Setter Property="Label.Content" Value="DPI" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
+                    </Label>
+                </Border>
+                <Border x:Name="iconColorMode_Face" Grid.Row="2" Grid.Column="1" BorderThickness="2" CornerRadius="8" Margin="3" ToolTip="sldkslkfssf">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="Red" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ColorMode}" Value="CMYK">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ColorMode}" Value="Gray">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ColorMode}" Value="non">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ColorMode}" Value="{x:Null}">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconColorMode_Face}" FontFamily="Calibri">
+                        <Label.Style>
+                            <Style>
+                                <Setter Property="Label.Content" Value="{Binding Path=CorelDocker.OpenedOrder.Page1ColorMode}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ColorMode}" Value="non">
+                                        <Setter Property="Label.Content" Value="CMYK" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1ColorMode}" Value="{x:Null}">
+                                        <Setter Property="Label.Content" Value="CMYK" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
+                    </Label>
+                </Border>
+                <Border x:Name="iconText_Face" Grid.Row="3" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Texts}" Value="true">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Texts}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="TEXT" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconText_Face}" FontFamily="Calibri" />
+                </Border>
+                <Border x:Name="iconEffect_Face" Grid.Row="3" Grid.Column="1" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Effects}" Value="true">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Effects}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page1Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="EFFECT" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconEffect_Face}" FontFamily="Calibri" />
+                </Border>
+                <Border x:Name="iconCenter_Back" Grid.Row="1" Grid.Column="3" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2IsCentered}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2IsCentered}" Value="true">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="CENTER" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconCenter_Back}" FontFamily="Calibri" />
+                </Border>
+                <Border x:Name="iconSize_Back" Grid.Row="1" Grid.Column="4" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2SizeIsCorrect}" Value="2">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2SizeIsCorrect}" Value="1">
+                                    <Setter Property="Border.BorderBrush" Value="#FFFFDC00" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2SizeIsCorrect}" Value="0">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="SIZE" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconSize_Back}" FontFamily="Calibri" />
+                </Border>
+                <Border x:Name="iconResolution_Back" Grid.Row="2" Grid.Column="3" BorderThickness="2" CornerRadius="8" Margin="3" ToolTip="sldkslkfssf">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ResolutionIsCorrect}" Value="2">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ResolutionIsCorrect}" Value="1">
+                                    <Setter Property="Border.BorderBrush" Value="#FFFFDC00" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ResolutionIsCorrect}" Value="0">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconResolution_Back}" FontFamily="Calibri">
+                        <Label.Style>
+                            <Style>
+                                <Setter Property="Label.Content" Value="{Binding Path=CorelDocker.OpenedOrder.Page2Resolution}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Resolution}" Value="">
+                                        <Setter Property="Label.Content" Value="DPI" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Resolution}" Value="{x:Null}">
+                                        <Setter Property="Label.Content" Value="DPI" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
+                    </Label>
+                </Border>
+                <Border x:Name="iconColorMode_Back" Grid.Row="2" Grid.Column="4" BorderThickness="2" CornerRadius="8" Margin="3" ToolTip="sldkslkfssf">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="Red" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ColorMode}" Value="CMYK">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ColorMode}" Value="Gray">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ColorMode}" Value="non">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ColorMode}" Value="{x:Null}">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconColorMode_Back}" FontFamily="Calibri">
+                        <Label.Style>
+                            <Style>
+                                <Setter Property="Label.Content" Value="{Binding Path=CorelDocker.OpenedOrder.Page2ColorMode}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ColorMode}" Value="non">
+                                        <Setter Property="Label.Content" Value="CMYK" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2ColorMode}" Value="{x:Null}">
+                                        <Setter Property="Label.Content" Value="CMYK" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
+                    </Label>
+                </Border>
+                <Border x:Name="iconText_Back" Grid.Row="3" Grid.Column="3" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Texts}" Value="true">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Texts}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="TEXT" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconText_Back}" FontFamily="Calibri" />
+                </Border>
+                <Border x:Name="iconEffect_Back" Grid.Row="3" Grid.Column="4" BorderThickness="2" CornerRadius="8" Margin="3">
+                    <Border.Style>
+                        <Style>
+                            <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Effects}" Value="true">
+                                    <Setter Property="Border.BorderBrush" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Effects}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="LimeGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=CorelDocker.OpenedOrder.Page2Exist}" Value="false">
+                                    <Setter Property="Border.BorderBrush" Value="#FFC3C3C3" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Label Content="EFFECT" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           FontWeight="Bold" Foreground="{Binding BorderBrush, ElementName=iconEffect_Back}" FontFamily="Calibri" />
+                </Border>
+            </Grid>
+        </Grid>
+        <DockPanel x:Name="pListNewOrders" Grid.RowSpan="2" Style="{StaticResource style_FileChoiceDockPanel}"
+                   Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                   IsVisibleChanged="pListNewOrders_IsVisibleChanged">
+            <StackPanel DockPanel.Dock="Bottom" Height="40" HorizontalAlignment="Right" Orientation="Horizontal" Margin="15,0">
+                <Button Content="Ok" Height="28" Margin="6,0" Padding="10,1" VerticalAlignment="Center" FontSize="14"
+                        Command="{Binding BtnNewOrder_ClickCommand}"  CommandParameter="true" IsDefault="True" Focusable="False" />
+                <Button Content="Cancel" Height="28" Margin="6,0" Padding="10,1" VerticalAlignment="Center" FontSize="14"
+                        Command="{Binding BtnNewOrder_ClickCommand}"  CommandParameter="false" IsCancel="True" Focusable="False" />
+            </StackPanel>
+            <ListBox x:Name="lbListNewOrders" ItemTemplate="{StaticResource dataTemplate_ListNewOrders}" 
+                     ItemsSource="{Binding Path=CorelDocker.ListNewOrder}" SelectedIndex="{Binding Path=CorelDocker.IndexOfSelectedOrder}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding BtnNewOrder_ClickCommand}" CommandParameter="true"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ListBox.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Control.HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Control.Padding" Value="0" />
+                        <Setter Property="Control.Margin" Value="0" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </DockPanel>
+        <Border Grid.RowSpan="2" Background="#D84D4D4D" Style="{StaticResource style_WaitingPanel}">
+            <TextBlock TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FFD1D1D1" FontSize="16">
+                <Run FontWeight="Bold" Foreground="White" Text="{Binding CorelDocker.WaitingText}"/>
+                <LineBreak /><LineBreak />
+                <Run>Please wait...</Run>
+            </TextBlock>
+        </Border>
+        <StackPanel Grid.RowSpan="2" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Visibility="{Binding IsChecked, ElementName=btnAdditionalMenu, Converter={StaticResource BoolToVis}}">
+            <Grid Height="80" Margin="10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="18"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Circle:" FontStyle="Italic" Grid.ColumnSpan="2" Margin="0,0,0,30.8" Grid.RowSpan="2" FontWeight="Bold" />
+                <ToggleButton x:Name="btnAdditionalMenuClose" Grid.Column="4" Content="{StaticResource IconCloseMenu}" ToolTip="Additional menu" Template="{StaticResource template_ToolBoxButton}" Style="{StaticResource style_ToolBoxButton}" IsChecked="{Binding IsChecked, ElementName=btnAdditionalMenu}" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBlock Grid.Row="1" Grid.RowSpan="2" Text="d = " VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <TextBox Grid.Row="1" Grid.RowSpan="2" Text="{Binding CorelDocker.Hole.Diameter}" VerticalAlignment="Center" Margin="22,0,0,0" HorizontalContentAlignment="Center" FontSize="14" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text=" ↑" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" FontFamily="Arial"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CorelDocker.Hole.Top, StringFormat={}{0:0.####}}" VerticalAlignment="Center" Margin="22,0,0,0" HorizontalContentAlignment="Center" FontSize="14" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text=" ↓" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" FontFamily="Arial"/>
+                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding CorelDocker.Hole.Bottom, StringFormat={}{0:0.####}}" VerticalAlignment="Center" Margin="22,0,0,0" HorizontalContentAlignment="Center" FontSize="14" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="←" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" FontFamily="Arial"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding CorelDocker.Hole.Left, StringFormat={}{0:0.####}}" VerticalAlignment="Center" Margin="22,0,0,0" HorizontalContentAlignment="Center" FontSize="14" />
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="→" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" FontFamily="Arial"/>
+                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding CorelDocker.Hole.Right, StringFormat={}{0:0.####}}" VerticalAlignment="Center" Margin="22,0,0,0" HorizontalContentAlignment="Center" FontSize="14" />
+                <Button Content="Draw circle" Grid.Row="1" Grid.RowSpan="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20,5" Command="{Binding BtnDrawCircle_ClickCommand}"/>
+            </Grid>
+            <Line Stroke="Gray" Stretch="UniformToFill" X2="1" Margin="10,0" />
+            <Grid Height="80" Margin="10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="18" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Cutline:" FontStyle="Italic" Grid.ColumnSpan="2" Margin="0,0,0,30.8" Grid.RowSpan="2" FontWeight="Bold" />
+                <TextBlock Grid.Row="1" Text="Color name:" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CorelDocker.Cutline.ColorName}" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" />
+                <CheckBox Content="Remove dotted line" IsChecked="{Binding CorelDocker.Cutline.RemoveDottedLine}" Grid.Row="2" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
+                <Button Content="Find and fix" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20,5" Command="{Binding BtnFixCutline_ClickCommand}"/>
+            </Grid>
+            <Line Stroke="Gray" Stretch="UniformToFill" X2="1" Margin="10,0" />
+        </StackPanel>
+    </Grid>
+</UserControl>
